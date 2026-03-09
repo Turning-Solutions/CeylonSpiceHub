@@ -30,7 +30,7 @@ const productSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['Sauces', 'Chutney', 'Jam', 'Wines', 'Spices']
+    enum: ['Sauces', 'Chutney', 'Jam', 'Wines', 'Spices', 'Katagasma Range']
   },
   subCategory: {
     type: String,

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ShoppingCart, Minus, Plus, Package, Check, ArrowLeft } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, Package, Check, ArrowLeft, Clock } from 'lucide-react';
 import { getProductById } from '@/api/index';
 import { addToCart } from '@/lib/cartStore';
 import { useToast } from '@/components/ui/use-toast';
@@ -16,7 +16,9 @@ const ProductDetailsPage = () => {
   const location = useLocation();
   const { toast } = useToast();
   const [product, setProduct] = useState(location.state?.product || null); // Initialize with passed state
-  const [quantity, setQuantity] = useState(1);
+  const isPreOrder = (p) => (p?.category === 'Katagasma Range');
+  const minQty = (p) => isPreOrder(p) ? 2 : 1;
+  const [quantity, setQuantity] = useState(location.state?.product?.category === 'Katagasma Range' ? 2 : 1);
   const [selectedType, setSelectedType] = useState(null);
   const [selectedWeight, setSelectedWeight] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -61,6 +63,7 @@ const ProductDetailsPage = () => {
         }
 
         setProduct(foundProduct);
+        setQuantity(minQty(foundProduct));
 
         // If product has variants, set default selections
         if (foundProduct.variants && foundProduct.variants.length > 0) {
@@ -141,7 +144,7 @@ const ProductDetailsPage = () => {
 
   const handleQuantityChange = (value) => {
     const maxStock = getCurrentStock();
-    const newQuantity = Math.max(1, Math.min(maxStock, value));
+    const newQuantity = Math.max(minQty(product), Math.min(maxStock, value));
     setQuantity(newQuantity);
   };
 
@@ -414,14 +417,14 @@ const ProductDetailsPage = () => {
                 variant="outline"
                 size="icon"
                 onClick={() => handleQuantityChange(quantity - 1)}
-                disabled={quantity <= 1}
+                disabled={quantity <= minQty(product)}
                 className="h-12 w-12 rounded-lg border-2 hover:border-primary hover:text-primary"
               >
                 <Minus className="h-5 w-5" />
               </Button>
               <Input
                 type="number"
-                min="1"
+                min={minQty(product)}
                 max={getCurrentStock()}
                 value={quantity}
                 onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 1)}
@@ -440,6 +443,26 @@ const ProductDetailsPage = () => {
             </div>
           </div>
 
+          {/* Pre-Order Conditions Banner */}
+          {product.category === 'Katagasma Range' && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 p-5 space-y-3"
+            >
+              <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-bold text-base">
+                <Clock className="h-5 w-5 flex-shrink-0" />
+                Pre-Order Only — KATAGASMA Range
+              </div>
+              <ul className="text-sm text-amber-800 dark:text-amber-300 space-y-1.5 ml-7 list-disc">
+                <li>Minimum order: <strong>2 units</strong> per order</li>
+                <li>Lead time: Orders must be placed at least <strong>7 days</strong> prior to required date</li>
+                <li>Orders are confirmed upon <strong>full payment</strong></li>
+              </ul>
+            </motion.div>
+          )}
+
           {/* Add to Cart Button */}
           <motion.div
             whileHover={{ scale: 1.02 }}
@@ -452,7 +475,7 @@ const ProductDetailsPage = () => {
               disabled={isProductOutOfStock() || (product.variants && product.variants.length > 0 && !selectedVariant)}
             >
               <ShoppingCart className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-              {isProductOutOfStock() ? 'Out of Stock' : 'Add to Cart'}
+              {isProductOutOfStock() ? 'Out of Stock' : product.category === 'Katagasma Range' ? 'Pre-Order' : 'Add to Cart'}
             </Button>
           </motion.div>
         </div>

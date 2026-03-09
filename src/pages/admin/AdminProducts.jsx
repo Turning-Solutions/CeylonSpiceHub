@@ -23,6 +23,8 @@ import {
 } from '@/components/ui/select';
 import api from '@/api';
 
+const MAX_FEATURED_PRODUCTS = 5;
+
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -57,6 +59,19 @@ const AdminProducts = () => {
 
   const handleSubmit = async (formData) => {
     try {
+      const currentFeaturedCount = products.filter((product) => product.featured).length;
+      const wasFeatured = Boolean(editingProduct?.featured);
+      const wantsFeatured = Boolean(formData.featured);
+
+      if (wantsFeatured && !wasFeatured && currentFeaturedCount >= MAX_FEATURED_PRODUCTS) {
+        toast({
+          title: "Featured limit reached",
+          description: `Only ${MAX_FEATURED_PRODUCTS} products can be featured on the homepage.`,
+          variant: "destructive"
+        });
+        return;
+      }
+
       if (editingProduct) {
         await api.patch(`/products/${editingProduct._id}`, formData);
       } else {
@@ -152,6 +167,8 @@ const AdminProducts = () => {
     return matchesSearch && matchesCategory && matchesStock;
   });
 
+  const featuredCount = products.filter((product) => product.featured).length;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -161,7 +178,9 @@ const AdminProducts = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-primary">Products</h1>
-          <p className="text-muted-foreground">Manage your product inventory</p>
+          <p className="text-muted-foreground">
+            Manage your product inventory. {featuredCount}/{MAX_FEATURED_PRODUCTS} homepage featured slots used.
+          </p>
         </div>
         <Button onClick={handleAddNew}>
           <Plus className="mr-2 h-4 w-4" /> Add Product
@@ -187,6 +206,7 @@ const AdminProducts = () => {
             <SelectItem value="Jam">Jam</SelectItem>
             <SelectItem value="Wines">Wines</SelectItem>
             <SelectItem value="Spices">Spices</SelectItem>
+            <SelectItem value="Katagasma Range">Katagasma Range</SelectItem>
           </SelectContent>
         </Select>
 
@@ -270,6 +290,8 @@ const AdminProducts = () => {
             initialData={editingProduct}
             onSubmit={handleSubmit}
             onCancel={() => setIsDialogOpen(false)}
+            featuredCount={featuredCount}
+            maxFeatured={MAX_FEATURED_PRODUCTS}
           />
         </DialogContent>
       </Dialog>

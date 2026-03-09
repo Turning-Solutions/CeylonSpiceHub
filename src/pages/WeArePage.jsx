@@ -3,7 +3,53 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Target, Leaf, Heart, Globe, Users, Award, ShieldCheck, MapPin, Building, Calendar } from 'lucide-react';
+import { Eye, Target, Leaf, Heart, Globe, Users, Award, ShieldCheck } from 'lucide-react';
+
+const spiceValues = [
+  {
+    letter: 'S',
+    title: 'Socially and environmentally sustainable',
+    icon: Globe,
+  },
+  {
+    letter: 'P',
+    title: 'Passionate about healthy, nutritious products',
+    icon: Heart,
+  },
+  {
+    letter: 'I',
+    title: 'Integrity in all we do',
+    icon: ShieldCheck,
+  },
+  {
+    letter: 'C',
+    title: 'Customer-centric and taste-driven',
+    icon: Users,
+  },
+  {
+    letter: 'E',
+    title: 'Empowering rural women',
+    icon: Award,
+  },
+];
+
+const hubValues = [
+  {
+    letter: 'H',
+    title: 'Home-garden-based supply chains',
+    icon: Leaf,
+  },
+  {
+    letter: 'U',
+    title: 'Unique generational methods',
+    icon: Leaf,
+  },
+  {
+    letter: 'B',
+    title: 'Bountiful wellness in every bite',
+    icon: Heart,
+  },
+];
 
 const WeArePage = () => {
   return (
@@ -85,137 +131,105 @@ const WeArePage = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center space-y-2"
+          className="text-center space-y-3"
         >
-          <h2 className="text-3xl font-bold">
+          <Badge variant="outline" className="px-4 py-1 text-sm">
+            Core Values
+          </Badge>
+          <h2 className="text-3xl font-bold md:text-4xl">
             Core Values – <span className="text-primary">WE ARE SPICEHUB</span>
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Each letter of our name represents a fundamental value that drives everything we do
+          <p className="text-muted-foreground max-w-3xl mx-auto text-base md:text-lg">
+            Each letter in our name stands for a promise we live by, from sustainability and integrity
+            to empowerment, heritage, and customer care.
           </p>
         </motion.div>
 
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
-          {/* SPICE Column */}
-          <div className="space-y-3">
-            {[
-              {
-                letter: "S",
-                title: "Socially and environmentally sustainable",
-                icon: Globe
-              },
-              {
-                letter: "P",
-                title: "Passionate about healthy, nutritious products",
-                icon: Heart
-              },
-              {
-                letter: "I",
-                title: "Integrity in all we do",
-                icon: ShieldCheck
-              },
-              {
-                letter: "C",
-                title: "Customer-centric and taste-driven",
-                icon: Users
-              },
-              {
-                letter: "E",
-                title: "Empowering rural women",
-                icon: Award
-              },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="group relative"
-              >
-                <div className="flex items-center gap-4 p-4 rounded-lg border bg-card hover:border-primary/50 hover:shadow-sm transition-all duration-300">
-                  {/* Letter Badge */}
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 rounded-full border-2 border-primary/20 bg-primary/5 flex items-center justify-center group-hover:border-primary/40 group-hover:bg-primary/10 transition-all duration-300">
-                      <span className="text-2xl font-bold text-primary">
-                        {item.letter}
-                      </span>
+        <div className="max-w-6xl mx-auto grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+          {[
+            {
+              label: 'SPICE',
+              subtitle: 'The principles behind every product we make.',
+              values: spiceValues,
+              accent: 'from-primary/20 via-primary/5 to-transparent',
+            },
+            {
+              label: 'HUB',
+              subtitle: 'The roots, methods, and wellbeing we champion.',
+              values: hubValues,
+              accent: 'from-yellow-500/20 via-primary/5 to-transparent',
+            },
+          ].map((group, groupIndex) => (
+            <motion.div
+              key={group.label}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: groupIndex * 0.1 }}
+            >
+              <Card className="relative h-full overflow-hidden rounded-[2rem] border-border/60 bg-card/80 shadow-lg backdrop-blur-sm">
+                <div className={`absolute inset-0 bg-gradient-to-br ${group.accent} opacity-80`} />
+                <CardContent className="relative p-6 md:p-8">
+                  <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div>
+                      <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary/80">
+                        WE ARE
+                      </p>
+                      <h3 className="mt-2 text-4xl font-extrabold tracking-wide text-foreground md:text-5xl">
+                        {group.label}
+                      </h3>
                     </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 flex items-center gap-3">
-                    <item.icon className="h-4 w-4 text-primary/60 flex-shrink-0" />
-                    <p className="text-sm font-medium text-foreground">
-                      {item.title}
+                    <p className="max-w-xs text-sm leading-6 text-muted-foreground md:text-right">
+                      {group.subtitle}
                     </p>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
 
-          {/* HUB Column */}
-          <div className="space-y-3">
-            {[
-              {
-                letter: "H",
-                title: "Home-garden-based supply chains",
-                icon: Leaf
-              },
-              {
-                letter: "U",
-                title: "Unique generational methods",
-                icon: Leaf
-              },
-              {
-                letter: "B",
-                title: "Bountiful wellness in every bite",
-                icon: Heart
-              },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="group relative"
-              >
-                <div className="flex items-center gap-4 p-4 rounded-lg border bg-card hover:border-primary/50 hover:shadow-sm transition-all duration-300">
-                  {/* Letter Badge */}
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 rounded-full border-2 border-primary/20 bg-primary/5 flex items-center justify-center group-hover:border-primary/40 group-hover:bg-primary/10 transition-all duration-300">
-                      <span className="text-2xl font-bold text-primary">
-                        {item.letter}
-                      </span>
-                    </div>
+                  <div className="space-y-4">
+                    {group.values.map((item, index) => (
+                      <motion.div
+                        key={item.letter}
+                        initial={{ opacity: 0, x: groupIndex === 0 ? -16 : 16 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.05 * index }}
+                        className="group"
+                      >
+                        <div className="flex items-start gap-4 rounded-2xl border border-border/60 bg-background/80 p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
+                          <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-primary text-2xl font-extrabold text-primary-foreground shadow-md">
+                            {item.letter}
+                          </div>
+                          <div className="flex min-w-0 flex-1 items-start gap-3 pt-1">
+                            <div className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                              <item.icon className="h-4 w-4" />
+                            </div>
+                            <p className="text-sm font-medium leading-6 text-foreground md:text-base">
+                              {item.title}
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
                   </div>
-
-                  {/* Content */}
-                  <div className="flex-1 flex items-center gap-3">
-                    <item.icon className="h-4 w-4 text-primary/60 flex-shrink-0" />
-                    <p className="text-sm font-medium text-foreground">
-                      {item.title}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Bottom Tagline */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="text-center pt-2"
+          className="pt-2"
         >
-          <p className="text-base font-serif italic text-muted-foreground">
-            "Eight values, one mission: <span className="text-primary font-semibold">bringing authentic Sri Lankan flavors to the world</span>"
-          </p>
+          <Card className="max-w-4xl mx-auto rounded-[1.75rem] border-primary/15 bg-primary/5">
+            <CardContent className="p-6 text-center md:p-8">
+              <p className="text-base font-serif italic text-muted-foreground md:text-lg">
+                "Eight values, one mission: <span className="text-primary font-semibold">bringing authentic Sri Lankan flavors to the world</span>"
+              </p>
+            </CardContent>
+          </Card>
         </motion.div>
       </section>
 

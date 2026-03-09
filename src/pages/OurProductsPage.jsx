@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Search, ChevronDown, ChevronRight, Package } from 'lucide-react';
+import { Search, ChevronDown, ChevronRight, Package, Clock } from 'lucide-react';
 import api from '@/api/index';
 import { useToast } from '@/components/ui/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -87,7 +87,8 @@ const OurProductsPage = () => {
     'Chutney': 'https://res.cloudinary.com/dwuxumj4x/image/upload/v1771013796/WhatsApp_Image_2026-02-07_at_9.03.46_AM_u7l9hn.jpg',
     'Jam': 'https://res.cloudinary.com/dwuxumj4x/image/upload/v1769808438/JAM1_ip8qqy.jpg',
     'Wines': 'https://res.cloudinary.com/dwuxumj4x/image/upload/v1770493967/231b5bbd-5fb8-46bc-9f6c-fe294692597d.png',
-    'Spices': 'https://res.cloudinary.com/dwuxumj4x/image/upload/v1769808573/spices_r8wkkx.jpg'
+    'Spices': 'https://res.cloudinary.com/dwuxumj4x/image/upload/v1769808573/spices_r8wkkx.jpg',
+    'Katagasma Range': 'https://res.cloudinary.com/dwuxumj4x/image/upload/v1770146540/KATAGASMA_RANGE_vfqdyp.jpg'
   };
 
   const getCategoryImage = (category) => {
@@ -100,7 +101,8 @@ const OurProductsPage = () => {
     'Chutney': { subtitle: 'Traditional Recipe', title: 'Artisan Chutneys' },
     'Jam': { subtitle: 'Sweet & Natural', title: 'Handcrafted Jams' },
     'Wines': { subtitle: 'Premium Selection', title: 'Ceylon Wines' },
-    'Spices': { subtitle: 'Pure & Aromatic', title: 'Ceylon Spices' }
+    'Spices': { subtitle: 'Pure & Aromatic', title: 'Ceylon Spices' },
+    'Katagasma Range': { subtitle: 'Pre-Order Special', title: 'Katagasma Range' }
   };
 
   const getCategoryTagline = (category) => {
@@ -190,7 +192,19 @@ const OurProductsPage = () => {
                           Explore our premium selection of {category.toLowerCase()}. Hand-picked from the finest sources in Ceylon to bring authentic flavor to your kitchen.
                         </p>
 
-
+                        {category === 'Katagasma Range' && (
+                          <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 p-4 space-y-2">
+                            <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold text-sm">
+                              <Clock className="h-4 w-4 flex-shrink-0" />
+                              Pre-Order Only — Order Conditions
+                            </div>
+                            <ul className="text-sm text-amber-800 dark:text-amber-300 space-y-1 ml-6 list-disc">
+                              <li>Minimum order: 2 units per order</li>
+                              <li>Lead time: Orders must be placed at least 7 days prior</li>
+                              <li>Orders are confirmed upon full payment</li>
+                            </ul>
+                          </div>
+                        )}
 
                         <div className="pt-4">
                           <Button

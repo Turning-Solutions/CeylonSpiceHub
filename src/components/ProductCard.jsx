@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Eye } from 'lucide-react';
+import { ShoppingCart, Eye, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import { addToCart } from '@/lib/cartStore';
@@ -88,6 +88,16 @@ const ProductCard = ({ product }) => {
             </Button>
           </Link>
 
+          {/* Pre-Order badge */}
+          {product.category === 'Katagasma Range' && !isOutOfStock() && (
+            <div className="absolute top-2 left-2 z-10">
+              <span className="flex items-center gap-1 bg-amber-500 text-white px-3 py-1 text-xs font-bold uppercase tracking-wider rounded shadow-md">
+                <Clock className="h-3 w-3" />
+                Pre-Order
+              </span>
+            </div>
+          )}
+
           {/* Out of stock badge */}
           {isOutOfStock() && (
             <div className="absolute top-2 left-2 z-10">
@@ -146,11 +156,11 @@ const ProductCard = ({ product }) => {
         <CardFooter className="pt-0 pb-4 px-4 gap-2">
           <Button
             onClick={handleAddToCart}
-            className="flex-1 shadow-sm hover:shadow-md transition-all duration-200 group/button"
+            className={`flex-1 shadow-sm hover:shadow-md transition-all duration-200 group/button ${product.category === 'Katagasma Range' && !isOutOfStock() ? 'bg-amber-500 hover:bg-amber-600 text-white' : ''}`}
             disabled={isOutOfStock()}
           >
             <ShoppingCart className="w-4 h-4 mr-2 group-hover/button:scale-110 transition-transform" />
-            {isOutOfStock() ? 'Out of Stock' : 'Add to Cart'}
+            {isOutOfStock() ? 'Out of Stock' : product.category === 'Katagasma Range' ? 'Pre-Order' : 'Add to Cart'}
           </Button>
         </CardFooter>
       </Card>

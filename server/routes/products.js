@@ -2,6 +2,18 @@ import express from 'express';
 import Product from '../models/Product.js';
 
 const router = express.Router();
+const MAX_FEATURED_PRODUCTS = 5;
+
+const hasReachedFeaturedLimit = async (excludeId) => {
+  const query = { featured: true };
+
+  if (excludeId) {
+    query._id = { $ne: excludeId };
+  }
+
+  const featuredCount = await Product.countDocuments(query);
+  return featuredCount >= MAX_FEATURED_PRODUCTS;
+};
 
 // Get all products
 router.get('/', async (req, res) => {
@@ -48,7 +60,9 @@ router.get('/latest', async (req, res) => {
 router.get('/featured', async (req, res) => {
   try {
     console.log('Fetching featured products...');
-    const products = await Product.find({ featured: true });
+    const products = await Product.find({ featured: true })
+      .sort({ updatedAt: -1, createdAt: -1 })
+      .limit(MAX_FEATURED_PRODUCTS);
     console.log(`Found ${products.length} featured products`);
     res.json(products);
   } catch (error) {
@@ -103,6 +117,12 @@ router.post('/', async (req, res) => {
   try {
     console.log('Creating new product:', JSON.stringify(req.body, null, 2));
 
+    if (req.body.featured && await hasReachedFeaturedLimit()) {
+      return res.status(400).json({
+        message: `You can feature up to ${MAX_FEATURED_PRODUCTS} products only`
+      });
+    }
+
     // Clean up the data - remove undefined/null legacy fields when variants exist
     const productData = { ...req.body };
     if (productData.variants && productData.variants.length > 0) {
@@ -153,6 +173,22 @@ router.patch('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     console.log(`Updating product ${id}:`, req.body);
+
+    if (req.body.featured) {
+      const existingProduct = await Product.findById(id).select('featured');
+
+      if (!existingProduct) {
+        console.log(`Product not found with ID: ${id}`);
+        return res.status(404).json({ message: 'Product not found' });
+      }
+
+      if (!existingProduct.featured && await hasReachedFeaturedLimit(id)) {
+        return res.status(400).json({
+          message: `You can feature up to ${MAX_FEATURED_PRODUCTS} products only`
+        });
+      }
+    }
+
     const product = await Product.findByIdAndUpdate(
       id,
       req.body,

@@ -21,11 +21,14 @@ const CATEGORY_STRUCTURE = {
   'Chutney': ['Chutney'],
   'Jam': ['Fruit Jam'],
   'Wines': ['Fruit Wine'],
-  'Spices': ['Whole Spices', 'Spice Mixtures', 'Spice Blends']
+  'Spices': ['Whole Spices', 'Spice Mixtures', 'Spice Blends'],
+  'Katagasma Range': ['Moju', 'Pickle & Achcharu', 'Condiments', 'Baduma']
 };
 
-const ProductForm = ({ initialData, onSubmit, onCancel }) => {
+const ProductForm = ({ initialData, onSubmit, onCancel, featuredCount = 0, maxFeatured = 5 }) => {
   const { toast } = useToast();
+  const isAlreadyFeatured = Boolean(initialData?.featured);
+  const featuredLimitReached = featuredCount >= maxFeatured && !isAlreadyFeatured;
 
   const [formData, setFormData] = React.useState({
     name: initialData?.name || '',
@@ -104,6 +107,10 @@ const ProductForm = ({ initialData, onSubmit, onCancel }) => {
         imageUrl: formData.imageUrl,
         alt: formData.alt,
       };
+
+      if (formData.featured && featuredLimitReached) {
+        throw new Error(`Only ${maxFeatured} products can be featured on the homepage.`);
+      }
 
       if (hasVariants) {
         // Validate variants
@@ -495,10 +502,16 @@ const ProductForm = ({ initialData, onSubmit, onCancel }) => {
               <div className="flex items-center space-x-2 pt-4">
                 <Switch
                   checked={formData.featured}
+                  disabled={!formData.featured && featuredLimitReached}
                   onCheckedChange={(c) => setFormData(prev => ({ ...prev, featured: c }))}
                 />
                 <Label>Feature this product on homepage?</Label>
               </div>
+              <p className="text-xs text-muted-foreground">
+                {featuredLimitReached
+                  ? `Featured limit reached. Unfeature one of the current ${maxFeatured} products before adding another.`
+                  : `${featuredCount} of ${maxFeatured} homepage featured slots are currently in use.`}
+              </p>
             </div>
 
             <div className="flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-lg p-4 min-h-[200px]">

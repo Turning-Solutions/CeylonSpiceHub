@@ -2,7 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Leaf,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -32,6 +39,11 @@ const slideVariants = {
 const CustomSlideshow = ({ slides }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const heroPillars = [
+    { label: 'Ethically Sourced', icon: Sparkles },
+    { label: 'Freshly Packed', icon: ShieldCheck },
+    { label: '100% Natural', icon: Leaf },
+  ];
 
   const handleNext = () => {
     setDirection(1);
@@ -51,12 +63,36 @@ const CustomSlideshow = ({ slides }) => {
   // Preload all slider images on initial mount
   useEffect(() => {
     if (slides && slides.length > 0) {
+      const createdLinks = [];
+
+      const preconnect = document.createElement('link');
+      preconnect.rel = 'preconnect';
+      preconnect.href = 'https://res.cloudinary.com';
+      document.head.appendChild(preconnect);
+      createdLinks.push(preconnect);
+
       slides.forEach((slide) => {
         if (slide?.image) {
           const img = new Image();
           img.src = slide.image;
+          img.decoding = 'async';
+
+          const preload = document.createElement('link');
+          preload.rel = 'preload';
+          preload.as = 'image';
+          preload.href = slide.image;
+          document.head.appendChild(preload);
+          createdLinks.push(preload);
         }
       });
+
+      return () => {
+        createdLinks.forEach((link) => {
+          if (document.head.contains(link)) {
+            document.head.removeChild(link);
+          }
+        });
+      };
     }
   }, [slides]);
 
@@ -64,8 +100,10 @@ const CustomSlideshow = ({ slides }) => {
     return <div>No slides to display.</div>;
   }
 
+  const currentSlide = slides[currentIndex];
+
   return (
-    <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden rounded-lg shadow-2xl">
+    <div className="relative w-full min-h-[520px] overflow-hidden rounded-[2rem] shadow-2xl md:h-[620px] lg:h-[720px]">
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={currentIndex}
@@ -78,123 +116,161 @@ const CustomSlideshow = ({ slides }) => {
         >
           <img
             className="w-full h-full object-cover"
-            alt={slides[currentIndex].alt}
-            src={slides[currentIndex].image}
+            alt={currentSlide.alt}
+            src={currentSlide.image}
             loading="eager"
-            fetchpriority="high" />
-          {/* Text Content - Top Left for First Slide */}
-          <div className={cn(
-            "absolute top-0 left-0 pt-8 md:pt-20 lg:pt-28 pl-4 md:pl-16 lg:pl-24 pr-4 md:pr-12"
-          )}>
-            <div className={cn(
-              "flex flex-col items-start text-left max-w-full md:max-w-2xl gap-3 md:gap-6"
-            )}>
+            fetchPriority="high"
+          />
+
+          <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,215,0,0.12),transparent_28%)]" />
+
+          <div className="absolute inset-0 px-5 pb-24 pt-8 md:px-10 md:pb-24 md:pt-10 lg:px-16 lg:pb-28">
+            <div className="flex h-full items-end">
               <motion.div
-                initial={{ opacity: 0, y: -20 }}
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="relative"
+                transition={{ duration: 0.55 }}
+                className="w-full"
               >
-                <div className="absolute -left-2 top-0 bottom-0 w-1 bg-gradient-to-b from-yellow-400 via-orange-500 to-red-500 rounded-full"></div>
-                <h2 className="text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white mb-0 leading-tight pl-4">
-                  <span
-                    className="inline-block px-4 py-2 md:px-6 md:py-3 rounded-xl border border-white/20"
-                    style={{
-                      background: 'rgba(0, 0, 0, 0.85)',
-                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8)'
-                    }}
-                  >
-                    {slides[currentIndex].title}
-                  </span>
-                </h2>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-                className="relative pl-4"
-              >
-                <p
-                  className="text-lg md:text-xl lg:text-2xl text-yellow-300 font-bold mb-0 leading-tight inline-block px-4 py-2 md:px-5 md:py-2.5 rounded-lg border border-yellow-400/30"
-                  style={{
-                    background: 'rgba(0, 0, 0, 0.5)',
-                    boxShadow: '0 4px 24px rgba(234, 179, 8, 0.5)',
-                    textShadow: '0 2px 10px rgba(0,0,0,0.8), 0 0 20px rgba(234, 179, 8, 0.3)'
-                  }}
-                >
-                  {slides[currentIndex].tagline}
-                </p>
-              </motion.div>
-
-              {slides[currentIndex].imageDescription && (
                 <motion.div
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -24 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5, duration: 0.5 }}
-                  className="relative pl-4"
+                  transition={{ delay: 0.15, duration: 0.5 }}
+                  className="max-w-xl rounded-[1.75rem] border border-white/20 bg-black/15 p-5 text-white shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-sm md:max-w-2xl md:p-7 lg:p-8"
                 >
-                  <p
-                    className="text-sm md:text-base lg:text-lg text-white font-medium mb-2 md:mb-4 leading-relaxed inline-block px-4 py-2.5 md:px-5 md:py-3 rounded-lg border border-white/20"
-                    style={{
-                      background: 'rgba(0, 0, 0, 0.5)',
-                      boxShadow: '0 4px 24px rgba(0, 0, 0, 0.6)',
-                      textShadow: '0 2px 8px rgba(0,0,0,0.9)'
-                    }}
-                  >
-                    {slides[currentIndex].imageDescription}
-                  </p>
-                </motion.div>
-              )}
-            </div>
-          </div>
+                  <div className="mb-5 flex flex-wrap items-center gap-3">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/12 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white/95">
+                      The Ceylon Spice Hub
+                    </span>
+                    <span className="rounded-full border border-yellow-400/30 bg-yellow-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-yellow-200">
+                      {String(currentIndex + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
+                    </span>
+                  </div>
 
-          {/* Button - Lower Position */}
-          <div className="absolute inset-0 flex items-end justify-center pb-8 md:pb-12 lg:pb-16 pointer-events-none">
-            <motion.div
-              className="pointer-events-auto"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9, duration: 0.5 }}
-            >
-              <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base md:text-lg px-6 py-4 md:px-8 md:py-6 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
-                <Link to="/products">Shop Now</Link>
-              </Button>
-            </motion.div>
+                  <h2 className="text-3xl font-extrabold leading-tight text-balance md:text-5xl lg:text-6xl">
+                    {currentSlide.title}
+                  </h2>
+
+                  <p className="mt-3 max-w-xl text-base font-semibold text-yellow-200 md:text-xl lg:text-2xl">
+                    {currentSlide.tagline}
+                  </p>
+
+                  {currentSlide.imageDescription && (
+                    <p className="mt-4 max-w-xl text-sm leading-7 text-white/85 md:text-base">
+                      {currentSlide.imageDescription}
+                    </p>
+                  )}
+
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    {heroPillars.map((item) => (
+                      <span
+                        key={item.label}
+                        className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3.5 py-2 text-xs font-medium text-white/90"
+                      >
+                        <item.icon className="h-3.5 w-3.5 text-yellow-200" />
+                        {item.label}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                    <Button
+                      asChild
+                      size="lg"
+                      className="bg-primary px-7 text-base font-semibold shadow-xl transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90"
+                    >
+                      <Link to="/products">
+                        Shop Now
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      size="lg"
+                      variant="outline"
+                      className="border-white/25 bg-white/10 px-7 text-base font-semibold text-white backdrop-blur hover:bg-white/20 hover:text-white"
+                    >
+                      <Link to="/we-are">Our Story</Link>
+                    </Button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </div>
           </div>
         </motion.div>
       </AnimatePresence>
+
       <Button
         variant="outline"
         size="icon"
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 text-primary-foreground"
+        className="absolute left-4 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 rounded-full border-white/20 bg-black/15 text-white backdrop-blur-sm transition-all hover:bg-black/25 md:flex"
         onClick={handlePrevious}
+        aria-label="Previous slide"
       >
         <ChevronLeft className="h-6 w-6" />
       </Button>
       <Button
         variant="outline"
         size="icon"
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 text-primary-foreground"
+        className="absolute right-4 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 rounded-full border-white/20 bg-black/15 text-white backdrop-blur-sm transition-all hover:bg-black/25 md:flex"
         onClick={handleNext}
+        aria-label="Next slide"
       >
         <ChevronRight className="h-6 w-6" />
       </Button>
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex space-x-2">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => {
-              setDirection(index > currentIndex ? 1 : -1);
-              setCurrentIndex(index);
-            }}
-            className={cn(
-              'w-3 h-3 rounded-full transition-colors',
-              currentIndex === index ? 'bg-primary' : 'bg-white/50 hover:bg-white/80'
-            )}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
+
+      <div className="absolute inset-x-0 bottom-4 z-10 px-4 md:bottom-6 md:px-6">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 rounded-2xl border border-white/10 bg-black/18 px-4 py-3 backdrop-blur-sm md:flex-row md:items-center md:justify-between md:px-5">
+          <div className="flex items-center gap-3 text-white/85">
+            <span className="text-sm font-semibold">
+              {String(currentIndex + 1).padStart(2, '0')}
+            </span>
+            <div className="h-px w-8 bg-white/30" />
+            <p className="truncate text-sm text-white/70">{currentSlide.alt}</p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {slides.map((slide, index) => (
+              <button
+                key={slide.title}
+                onClick={() => {
+                  setDirection(index > currentIndex ? 1 : -1);
+                  setCurrentIndex(index);
+                }}
+                className={cn(
+                  'h-2.5 rounded-full transition-all duration-300',
+                  currentIndex === index
+                    ? 'w-10 bg-primary'
+                    : 'w-2.5 bg-white/45 hover:bg-white/80'
+                )}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+
+          <div className="flex items-center justify-end gap-2 md:hidden">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-10 w-10 rounded-full border-white/20 bg-white/10 text-white backdrop-blur hover:bg-white/20"
+              onClick={handlePrevious}
+              aria-label="Previous slide"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-10 w-10 rounded-full border-white/20 bg-white/10 text-white backdrop-blur hover:bg-white/20"
+              onClick={handleNext}
+              aria-label="Next slide"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
