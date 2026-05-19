@@ -242,11 +242,6 @@ const Layout = ({ children }) => {
                     </Link>
                   </li>
                 ))}
-                <li>
-                  <Link to="/admin" className="text-sm hover:text-accent transition-all duration-200 opacity-80 hover:opacity-100 hover:translate-x-1 inline-block">
-                    Admin Panel
-                  </Link>
-                </li>
               </ul>
             </div>
             <div>
